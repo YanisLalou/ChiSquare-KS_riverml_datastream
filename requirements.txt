@@ -1,0 +1,7 @@
+# generic libraries
+numpy
+scipy
+matplotlib
+
+# river library
+river
