@@ -146,6 +146,7 @@ class ChiSquareTest(stats.base.Univariate):
 
         for i in range(1, self.K):
             quantile_list.append(stats.Quantile(i/self.K))
+
         return quantile_list
 
     #For quantile method 2
