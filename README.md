@@ -1,5 +1,5 @@
 # ChiSquare and Kolmogorov-Smirnov implementation for the River library
-# Implementation done during the MAP670G DATA stream processing course at École Polytechnique
+Implementation done during the MAP670G DATA stream processing course at École Polytechnique
 
 # Setup
 Run the following command in your prefered local repository
