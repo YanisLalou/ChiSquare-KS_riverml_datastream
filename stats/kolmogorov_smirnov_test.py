@@ -2,12 +2,12 @@ import numpy as np
 from river import sketch, stats
 import random
 
-class KSTest(stats.base.Univariate):
+class KSTest(stats.base.Bivariate):
     """Running the Kolmogorov-Smirnov Test.
 
     Uses multiple algorithms to compute the Kolmogorov-Smirnov test in a running method.
     2 different algorithms are available to compute the Kolmogorov-Smirnov test.
-    Each of them compare a distribution to a uniform distribution.
+    Each of them compare a distribution to a another distribution.
 
     Parameters
     ----------
@@ -45,7 +45,7 @@ class KSTest(stats.base.Univariate):
     
     """
 
-    def __init__(self, K: int = 30, y: list = []):
+    def __init__(self, K: int = 30):
         super().__init__()
         self._is_updated = False
 
@@ -56,25 +56,19 @@ class KSTest(stats.base.Univariate):
         self.river_histogram = sketch.Histogram(max_bins=self.K)
 
         #We know in advance the distribution to compare to, so we can make a sketch of it
-        self.histogram_expected = sketch.Histogram(max_bins=self.K) #for methode2
-
-        #By default we compare our distribution to the uniform one on [0, 1]
-        if len(y) == 0:
-            y = [random.uniform(0, 1) for _ in range(1000)] 
-
-
-        for i, y_value in enumerate(y):
-            self.histogram_expected.update(y_value)
+        self.histogram_expected = sketch.Histogram(max_bins=self.K)
 
 
 
-    def update(self, x):
+    def update(self, x, y):
         self._is_updated = True
 
         self.N +=1
 
         self.__update_quantile_ks__(x)
         self.river_histogram.update(x)
+
+        self.histogram_expected.update(y)
 
         return self
 
@@ -93,8 +87,7 @@ class KSTest(stats.base.Univariate):
             case "quantile":
                 return self.__get_quantile_ks__()
             case "histogram":
-                #return self.__get_histogram_ks__()
-                pass
+                return self.__get_histogram_ks__()
             case default:
                 #By default, quantile method
                 return self.__get_quantile_ks__()
@@ -134,14 +127,15 @@ class KSTest(stats.base.Univariate):
             
         return ks
 
-    # TO MODIFY
+
     def __get_histogram_ks__(self):
+
         D_hat = 0
-        nb_tot = np.sum([self.histogram_expected[i].count for i in range (len(self.histogram_expected))])
+        nb_tot = self.river_histogram.n
 
         for p in range(len(self.histogram_expected)):
-            proba=np.sum([self.histogram_expected[i].count for i in range (p+1)])/nb_tot
-            proba_exp=np.sum([self.river_histogram[i].count for i in range (p+1)])/nb_tot
+            proba=np.sum([self.river_histogram[i].count for i in range (p+1)])/nb_tot
+            proba_exp=np.sum([self.histogram_expected[i].count for i in range (p+1)])/nb_tot
             E_hat=np.abs(proba_exp-proba)
             D_hat=D_hat if D_hat > E_hat else E_hat
             
