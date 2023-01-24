@@ -1,6 +1,12 @@
 # ChiSquare and Kolmogorov-Smirnov implementation for the River library
 Implementation done during the MAP670G DATA stream processing course at École Polytechnique
 
+Team composition:
+- Charlotte Cournon
+- Solene Debuysere
+- Yanis Lalou
+- Luka Trailovic
+
 # Setup
 Run the following command in your prefered local repository
 
